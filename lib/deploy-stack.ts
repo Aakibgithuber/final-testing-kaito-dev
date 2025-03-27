@@ -9,6 +9,7 @@ import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { elasticBeanstalkConfig } from './eb-config';
 import { S3BucketResource } from './resources/s3';
 import { ElasticBeanstalkResource } from './resources/ElasticBeanstalk';
+import { IAMResource } from './resources/IAM';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); 
