@@ -3,30 +3,25 @@ import { Construct } from 'constructs';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import { elasticBeanstalkConfig } from '../eb-config';
 
-export class ElasticBeanstalkResource {
-    scope: Construct;
+interface ElasticBeanstalkProps {
+    appName: string;
+    instanceProfileRef: string;
+}
 
-    constructor(scope: Construct) {
-        this.scope = scope;
-    }
+export class ElasticBeanstalkResource extends elasticbeanstalk.CfnApplication {
+    constructor(scope: Construct, id: string, props: ElasticBeanstalkProps) {
+        super(scope, id, { applicationName: props.appName });
 
-    createApplication(id: string, appName: string): elasticbeanstalk.CfnApplication {
-        return new elasticbeanstalk.CfnApplication(this.scope, id, {
-            applicationName: appName
-        });
-    }
-
-    createEnvironment(id: string, appName: string, instanceProfileRef: string): elasticbeanstalk.CfnEnvironment {
-        return new elasticbeanstalk.CfnEnvironment(this.scope, id, {
-            environmentName: `${appName}-env`,
-            applicationName: appName,
+        new elasticbeanstalk.CfnEnvironment(scope, `${id}-Env`, {
+            environmentName: `${props.appName}-env`,
+            applicationName: props.appName,
             platformArn: "arn:aws:elasticbeanstalk:ap-south-1::platform/Docker running on 64bit Amazon Linux 2023/4.4.4",
             optionSettings: [
                 ...elasticBeanstalkConfig,
                 {
                     namespace: 'aws:autoscaling:launchconfiguration',
                     optionName: 'IamInstanceProfile',
-                    value: instanceProfileRef
+                    value: props.instanceProfileRef
                 }
             ]
         });
