@@ -10,6 +10,8 @@ import { elasticBeanstalkConfig } from './eb-config';
 import { S3BucketResource } from './resources/s3';
 import { ElasticBeanstalkResource } from './resources/ElasticBeanstalk';
 import { IAMResource } from './resources/IAM';
+import { LambdaResource } from './resources/Lambda';
+import { CloudFrontResource } from './resources/CloudFront';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); 
@@ -35,7 +37,7 @@ export class KaitoApplicationStack extends cdk.Stack {
         const ebEnv1 = beanstalk.createEnvironment('MyElasticBeanstalkEnv1', ebApp1.applicationName!, instanceProfile1.ref);
 
        // Create Lambda Function
-        const schemaCreatorLambda1 = lambda.createSchemaCreatorLambda('SchemaCreatorLambda1');
+        const schemaCreatorLambda1 = lambda.SchemaCreator('SchemaCreatorLambda1');
 
         // Outputs
         new cdk.CfnOutput(this, 'BucketName', { value: myBucket.bucketName });
