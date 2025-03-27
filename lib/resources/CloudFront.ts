@@ -3,17 +3,15 @@ import { Construct } from 'constructs';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
-export class CloudFrontResource {
-    scope: Construct;
+interface CloudFrontProps {
+    endpointUrl: string;
+}
 
-    constructor(scope: Construct) {
-        this.scope = scope;
-    }
-
-    createCloudFront(id: string, endpointUrl: string): cloudfront.Distribution {
-        return new cloudfront.Distribution(this.scope, id, {
+export class CloudFrontDistribution extends cloudfront.Distribution {
+    constructor(scope: Construct, id: string, props: CloudFrontProps) {
+        super(scope, id, {
             defaultBehavior: {
-                origin: new origins.HttpOrigin(endpointUrl),
+                origin: new origins.HttpOrigin(props.endpointUrl),
                 cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
             }
         });
