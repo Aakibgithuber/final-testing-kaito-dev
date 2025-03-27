@@ -12,6 +12,15 @@ export class Kaitos3stack extends cdk.Stack {
 
         // S3 Buckets
         const myBucket = s3Bucket.create('MyBucket2', `${process.env.APP_NAME}-${process.env.NODE_ENV}-reports`.toLowerCase());
+        const myBucket3 = s3Bucket.create(
+            'MyBucket3',
+            `${process.env.APP_NAME}-${process.env.NODE_ENV}-uploads`.toLowerCase()
+        );
+        new s3deploy.BucketDeployment(this, 'UploadZipToMyBucket3', {
+            sources: [s3deploy.Source.asset('./assets/layer-package.zip')], 
+            destinationBucket: myBucket3, // 
+            destinationKeyPrefix: 'uploads/', 
+        });
 
         // Outputs
         new cdk.CfnOutput(this, 'BucketName', { value: myBucket.bucketName });
