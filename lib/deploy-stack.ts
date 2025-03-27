@@ -8,49 +8,12 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { elasticBeanstalkConfig } from './eb-config';
 import { S3BucketResource } from './resources/s3';
+import { ElasticBeanstalkResource } from './resources/ElasticBeanstalk';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); 
 
 
-// 🔹 Function to create Elastic Beanstalk Applications
-const createBeanstalkApp = (scope: Construct, id: string, appName: string) => {
-    return new elasticbeanstalk.CfnApplication(scope, id, {
-        applicationName: appName
-    });
-};
-
-// 🔹 Function to create IAM Roles
-const createInstanceRole = (scope: Construct, id: string) => {
-    const instanceRole = new iam.Role(scope, `${id}-Role`, {
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-        managedPolicies: [
-            iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'),
-            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess')
-        ]
-    });
-
-    return new iam.CfnInstanceProfile(scope, `${id}-InstanceProfile`, {
-        roles: [instanceRole.roleName]
-    });
-};
-
-// 🔹 Function to create Elastic Beanstalk Environments
-const createBeanstalkEnv = (scope: Construct, id: string, appName: string, instanceProfileRef: string) => {
-    return new elasticbeanstalk.CfnEnvironment(scope, id, {
-        environmentName: `${appName}-env`,
-        applicationName: appName,
-        platformArn: "arn:aws:elasticbeanstalk:ap-south-1::platform/Docker running on 64bit Amazon Linux 2023/4.4.4",
-        optionSettings: [
-            ...elasticBeanstalkConfig,
-            {
-                namespace: 'aws:autoscaling:launchconfiguration',
-                optionName: 'IamInstanceProfile',
-                value: instanceProfileRef
-            }
-        ]
-    });
-};
 
 // 🔹 Function to create Lambda Functions
 const createSchemaCreatorLambda = (scope: Construct, id: string) => {
@@ -85,18 +48,18 @@ export class KaitoApplicationStack extends cdk.Stack {
     constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        // S3 Buckets
+        // Initialize Resources
         const s3Bucket = new S3BucketResource(this);
+        const beanstalk = new ElasticBeanstalkResource(this);
+        const iam = new IAMResource(this);
+
+        // S3 Buckets
         const myBucket = s3Bucket.create('MyBucket1', `${process.env.APP_NAME}-${process.env.NODE_ENV}-client1`.toLowerCase());
 
-        // Elastic Beanstalk Applications
-        const ebApp1 = createBeanstalkApp(this, 'MyElasticBeanstalkApp1', "kaito-eb-app-1");
-
-        // Instance Profiles
-        const instanceProfile1 = createInstanceRole(this, 'MyBeanstalkInstanceRole1');
-
-        // Elastic Beanstalk Environments
-        const ebEnv1 = createBeanstalkEnv(this, 'MyElasticBeanstalkEnv1', ebApp1.applicationName!, instanceProfile1.ref);
+        // Create Elastic Beanstalk App & Env
+        const ebApp1 = beanstalk.createApplication('MyElasticBeanstalkApp1', "kaito-eb-app-1");
+        const instanceProfile1 = iam.createInstanceRole('MyBeanstalkInstanceRole1');
+        const ebEnv1 = beanstalk.createEnvironment('MyElasticBeanstalkEnv1', ebApp1.applicationName!, instanceProfile1.ref);
 
         // Lambda Functions
         const schemaCreatorLambda1 = createSchemaCreatorLambda(this, 'SchemaCreatorLambda1');
