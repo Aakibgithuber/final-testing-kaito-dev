@@ -36,7 +36,6 @@ export class KaitoApplicationStack extends cdk.Stack {
         // Outputs
         new cdk.CfnOutput(this, 'BucketName', { value: myBucket.bucketName });
         new cdk.CfnOutput(this, 'ElasticBeanstalkEnv1', { value: ebEnv1.ref });
-        new cdk.CfnOutput(this, 'CloudFrontURL1', { value: cfDistribution1.distributionDomainName });
         new cdk.CfnOutput(this, 'Lambda1', { value: schemaCreatorLambda1.functionName });
     }
 }
