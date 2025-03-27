@@ -87,7 +87,7 @@ export class KaitoApplicationStack extends cdk.Stack {
 
         // S3 Buckets
         const s3Bucket = new S3BucketResource(this);
-        const myBucket = s3Bucket.create('MyBucket1', '${process.env.APP_NAME}-${process.env.NODE_ENV}-client1');
+        const myBucket = s3Bucket.create('MyBucket1', `${process.env.APP_NAME}-${process.env.NODE_ENV}-client1`.toLowerCase());
 
         // Elastic Beanstalk Applications
         const ebApp1 = createBeanstalkApp(this, 'MyElasticBeanstalkApp1', "kaito-eb-app-1");
