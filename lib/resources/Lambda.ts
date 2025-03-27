@@ -3,27 +3,20 @@ import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 
-export class LambdaResource {
-    scope: Construct;
+interface LambdaProps {
+    functionName: string;
+    entryPath: string;
+    environment?: { [key: string]: string };
+}
 
-    constructor(scope: Construct) {
-        this.scope = scope;
-    }
-
-    SchemaCreator(id: string): lambda.Function {
-        return new nodejs.NodejsFunction(this.scope, id, {
-            functionName: `${id}`,
+export class LambdaFunction extends nodejs.NodejsFunction {
+    constructor(scope: Construct, id: string, props: LambdaProps) {
+        super(scope, id, {
+            functionName: props.functionName,
             runtime: lambda.Runtime.NODEJS_20_X,
             handler: 'handler',
-            entry: 'lib/lambda/schema_creator.ts',
-            environment: {
-                DB_HOST: process.env.DB_HOST!,
-                DB_DATABASE: process.env.DB_DATABASE!,
-                DB_USER: process.env.DB_USER!,
-                DB_PASSWORD: process.env.DB_PASSWORD!,
-                DB_PORT: process.env.DB_PORT || '5432',
-                DB_SCHEMA: process.env.DB_SCHEMA!
-            }
+            entry: props.entryPath,
+            environment: props.environment || {}
         });
     }
 }
