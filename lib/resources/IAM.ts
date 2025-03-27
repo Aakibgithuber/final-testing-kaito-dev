@@ -2,15 +2,13 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-export class IAMResource {
-    scope: Construct;
+interface IAMProps {
+    roleName: string;
+}
 
-    constructor(scope: Construct) {
-        this.scope = scope;
-    }
-
-    createInstanceRole(id: string): iam.CfnInstanceProfile {
-        const instanceRole = new iam.Role(this.scope, `${id}-Role`, {
+export class IAMInstanceProfile extends iam.CfnInstanceProfile {
+    constructor(scope: Construct, id: string, props: IAMProps) {
+        const instanceRole = new iam.Role(scope, props.roleName, {
             assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'),
@@ -18,7 +16,7 @@ export class IAMResource {
             ]
         });
 
-        return new iam.CfnInstanceProfile(this.scope, `${id}-InstanceProfile`, {
+        super(scope, `${id}-InstanceProfile`, {
             roles: [instanceRole.roleName]
         });
     }
