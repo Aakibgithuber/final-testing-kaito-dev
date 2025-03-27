@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
@@ -8,18 +7,11 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { elasticBeanstalkConfig } from './eb-config';
+import { S3BucketResource } from './resources/s3';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); 
 
-// 🔹 Function to create S3 Buckets
-const createBucket = (scope: Construct, id: string, bucketName: string) => {
-    return new s3.Bucket(scope, id, {
-        bucketName,
-        versioned: true,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-};
 
 // 🔹 Function to create Elastic Beanstalk Applications
 const createBeanstalkApp = (scope: Construct, id: string, appName: string) => {
@@ -94,7 +86,8 @@ export class KaitoApplicationStack extends cdk.Stack {
         super(scope, id, props);
 
         // S3 Buckets
-        const bucket1 = createBucket(this, `${id}-bucket1`, "kaito-test-bucket-123");
+        const s3Bucket = new S3BucketResource(this);
+        const myBucket = s3Bucket.create('MyBucket1', '${process.env.APP_NAME}-${process.env.NODE_ENV}-client1');
 
         // Elastic Beanstalk Applications
         const ebApp1 = createBeanstalkApp(this, 'MyElasticBeanstalkApp1', "kaito-eb-app-1");
@@ -109,7 +102,7 @@ export class KaitoApplicationStack extends cdk.Stack {
         const schemaCreatorLambda1 = createSchemaCreatorLambda(this, 'SchemaCreatorLambda1');
 
         // Outputs
-        new cdk.CfnOutput(this, 'BucketName1', { value: bucket1.bucketName });
+        new cdk.CfnOutput(this, 'BucketName', { value: myBucket.bucketName });
         new cdk.CfnOutput(this, 'ElasticBeanstalkEnv1', { value: ebEnv1.ref });
         new cdk.CfnOutput(this, 'Lambda1', { value: schemaCreatorLambda1.functionName });
     }
