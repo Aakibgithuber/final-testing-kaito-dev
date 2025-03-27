@@ -1,12 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
-import { elasticBeanstalkConfig } from './eb-config';
 import { S3BucketResource } from './resources/s3';
 import { ElasticBeanstalkResource } from './resources/ElasticBeanstalk';
 import { IAMResource } from './resources/IAM';
@@ -15,6 +8,7 @@ import { CloudFrontResource } from './resources/CloudFront';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); 
+
 
 // 🔹 Main Stack Definition
 export class KaitoApplicationStack extends cdk.Stack {
@@ -36,12 +30,13 @@ export class KaitoApplicationStack extends cdk.Stack {
         const instanceProfile1 = iam.createInstanceRole('MyBeanstalkInstanceRole1');
         const ebEnv1 = beanstalk.createEnvironment('MyElasticBeanstalkEnv1', ebApp1.applicationName!, instanceProfile1.ref);
 
-       // Create Lambda Function
+        // Create Lambda Function
         const schemaCreatorLambda1 = lambda.SchemaCreator('SchemaCreatorLambda1');
 
         // Outputs
         new cdk.CfnOutput(this, 'BucketName', { value: myBucket.bucketName });
         new cdk.CfnOutput(this, 'ElasticBeanstalkEnv1', { value: ebEnv1.ref });
+        new cdk.CfnOutput(this, 'CloudFrontURL1', { value: cfDistribution1.distributionDomainName });
         new cdk.CfnOutput(this, 'Lambda1', { value: schemaCreatorLambda1.functionName });
     }
 }
