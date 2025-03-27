@@ -114,8 +114,3 @@ export class KaitoApplicationStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'Lambda1', { value: schemaCreatorLambda1.functionName });
     }
 }
-
-// App Initialization
-const app = new cdk.App();
-new KaitoApplicationStack(app, 'KaitoApplicationStack');
-app.synth();
