@@ -14,9 +14,9 @@ const tenantName = process.env.TENANT_NAME || 'default-tenant';
 //   },
 // });
 
-new BackendApplicationStack(app, 'BackendApplicationStack', {
+new BackendApplicationStack(app, `${tenantName}-BackendApplicationStack`, {
   tenantName: tenantName,
-  stackName: `${projectConfig.projectPrefix}-s3-creation-stack`,
+  stackName: `${projectConfig.projectPrefix}-${tenantName}-s3-creation-stack`,
   env: {
     region: projectConfig.environments.DEV.region,
   },
