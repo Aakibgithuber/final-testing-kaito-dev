@@ -46,16 +46,3 @@ jobs:
 
       - name: Deploy AWS CDK Stack
         run: cdk deploy --all --require-approval never
-
-      - name: Invoke Lambda for Schema Creation
-        run: |
-          LAMBDA_NAME="SchemaCreatorLambda1"
-          if aws lambda get-function --function-name "$LAMBDA_NAME" --region ap-south-1; then
-            aws lambda invoke \
-              --function-name "$LAMBDA_NAME" \
-              --region ap-south-1 \
-              output.json
-          else
-            echo "❌ Lambda function '$LAMBDA_NAME' not found."
-            exit 1
-          fi
