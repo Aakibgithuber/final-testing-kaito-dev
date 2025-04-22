@@ -7,12 +7,12 @@ import * as projectConfig from '../config/projectConfig.json';
 const app = new cdk.App();
 const tenantName = process.env.TENANT_NAME || 'default-tenant';
 
-new KaitoApplicationStack(app, 'KaitoApplicationStack', {
-  stackName: `${projectConfig.projectPrefix}-pipeline-stack`,
-  env: {
-    region: projectConfig.environments.DEV.region,
-  },
-});
+// new KaitoApplicationStack(app, 'KaitoApplicationStack', {
+//   stackName: `${projectConfig.projectPrefix}-pipeline-stack`,
+//   env: {
+//     region: projectConfig.environments.DEV.region,
+//   },
+// });
 
 new BackendApplicationStack(app, 'BackendApplicationStack', {
   tenantName: tenantName,
