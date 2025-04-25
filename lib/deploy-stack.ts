@@ -15,7 +15,7 @@ export class KaitoApplicationStack extends cdk.Stack {
 
         // S3 Bucket
         const s3Bucket = new S3BucketResource(this, 'MyBucket1', {
-            bucketName: `${process.env.APP_NAME}-${process.env.NODE_ENV}-client1`.toLowerCase(),
+            bucketName: `kaito-dev-client2`.toLowerCase(),
             versioned: true,
             publicReadAccess: false
         });
@@ -48,6 +48,6 @@ export class KaitoApplicationStack extends cdk.Stack {
         // Outputs
         new cdk.CfnOutput(this, 'BucketName', { value: s3Bucket.bucketName });
         new cdk.CfnOutput(this, 'ElasticBeanstalkEnv1', { value: ebApp1.applicationName! });
-        new cdk.CfnOutput(this, 'Lambda1', { value: schemaCreatorLambda1.functionName });
+        // new cdk.CfnOutput(this, 'Lambda1', { value: schemaCreatorLambda1.functionName });
     }
 }
