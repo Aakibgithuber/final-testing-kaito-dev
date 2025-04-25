@@ -32,18 +32,18 @@ export class KaitoApplicationStack extends cdk.Stack {
         });
 
         // Lambda Function
-        const schemaCreatorLambda1 = new LambdaFunction(this, 'SchemaCreatorLambda1', {
-            functionName: 'SchemaCreatorLambda',
-            entryPath: 'lib/lambda/schema_creator.ts',
-            environment: {
-                DB_HOST: process.env.DB_HOST!,
-                DB_DATABASE: process.env.DB_DATABASE!,
-                DB_USER: process.env.DB_USER!,
-                DB_PASSWORD: process.env.DB_PASSWORD!,
-                DB_PORT: process.env.DB_PORT || '5432',
-                DB_SCHEMA: process.env.DB_SCHEMA!
-            }
-        });
+        // const schemaCreatorLambda1 = new LambdaFunction(this, 'SchemaCreatorLambda1', {
+        //     functionName: 'SchemaCreatorLambda',
+        //     entryPath: 'lib/lambda/schema_creator.ts',
+        //     environment: {
+        //         DB_HOST: process.env.DB_HOST!,
+        //         DB_DATABASE: process.env.DB_DATABASE!,
+        //         DB_USER: process.env.DB_USER!,
+        //         DB_PASSWORD: process.env.DB_PASSWORD!,
+        //         DB_PORT: process.env.DB_PORT || '5432',
+        //         DB_SCHEMA: process.env.DB_SCHEMA!
+        //     }
+        // });
 
         // Outputs
         new cdk.CfnOutput(this, 'BucketName', { value: s3Bucket.bucketName });
